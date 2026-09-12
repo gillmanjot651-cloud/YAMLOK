@@ -52,33 +52,9 @@
   },
   "images": [
     {
-      "id": "iy5bpyq",
-      "src": "https://media.discordapp.net/attachments/1453837697914241138/1457003537497067630/Ghostjogi.png?ex=6aa6a5c9&is=6aa55449&hm=5c5182960fed91d5564daf4af07f9294968ad07db07d794877ec161ec28a92c9&=&format=webp&quality=lossless&width=640&height=360",
-      "alt": "Mafia",
-      "category": "Thumbnail"
-    },
-    {
-      "id": "l9thwnf",
-      "src": "https://media.discordapp.net/attachments/1453837697914241138/1470677344309088427/Funnyred.png?ex=6aa6f442&is=6aa5a2c2&hm=a974c58974bdc74eef0ac2c234462fbf477f93afb9c653e4aefb087c88c51e53&=&format=webp&quality=lossless&width=1536&height=864",
-      "alt": "RDR2",
-      "category": "Thumbnail"
-    },
-    {
-      "id": "8dhdldu",
-      "src": "https://media.discordapp.net/attachments/1453837697914241138/1470677367293739048/abeyyaar.png?ex=6aa6f448&is=6aa5a2c8&hm=7965496e5e959c92efb1b10d1d0ff657e3cb34fca2385542b993e415c718d465&=&format=webp&quality=lossless&width=1536&height=864",
-      "alt": "ff",
-      "category": "Thumbnail"
-    },
-    {
-      "id": "9pkgpap",
-      "src": "https://media.discordapp.net/attachments/1453837697914241138/1453838225385721988/ChatGPT_Image_Dec_26_2025_01_13_41_AM.jpg?ex=6aa6ff5b&is=6aa5addb&hm=d198af72aa7c865576c9429c284ec37bc395542f756e6b8650d676616704d58a&=&format=webp&width=640&height=360",
-      "alt": "soul",
-      "category": "Thumbnail"
-    },
-    {
-      "id": "irh5yqo",
+      "id": "7y2k45e",
       "src": "https://cdn.discordapp.com/attachments/1453837697914241138/1453838171279327354/gpt_extend.jpg?ex=6aa6ff4f&is=6aa5adcf&hm=430c30b50d4714d022e22bcf534801e9dcfcddd338fa0f8ab3bda6086ed5d2f0&",
-      "alt": "EZ",
+      "alt": "ez",
       "category": "Graphic"
     }
   ],
