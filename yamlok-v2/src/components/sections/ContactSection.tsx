@@ -35,7 +35,7 @@ export default function ContactSection() {
   const [contact, setContact] = useState<ContactData>(DEFAULT_CONTACT);
 
   useEffect(() => {
-    fetch('/api/media')
+    fetch('/api/media', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { if (d.contact) setContact(d.contact); })
       .catch(() => {});
@@ -137,3 +137,4 @@ export default function ContactSection() {
     </motion.section>
   );
 }
+

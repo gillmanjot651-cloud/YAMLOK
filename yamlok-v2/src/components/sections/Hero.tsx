@@ -25,7 +25,7 @@ export default function Hero() {
   const [deleting,  setDeleting]  = useState(false);
 
   useEffect(() => {
-    fetch('/api/media')
+    fetch('/api/media', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { if (d.hero) setHero(d.hero); })
       .catch(() => {});
@@ -146,3 +146,4 @@ export default function Hero() {
     </section>
   );
 }
+

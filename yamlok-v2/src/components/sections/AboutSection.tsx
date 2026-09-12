@@ -17,7 +17,7 @@ export default function AboutSection() {
   });
 
   useEffect(() => {
-    fetch('/api/media')
+    fetch('/api/media', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { if (d.about) setAbout(d.about); })
       .catch(() => {});
@@ -72,3 +72,4 @@ export default function AboutSection() {
     </motion.section>
   );
 }
+

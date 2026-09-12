@@ -20,7 +20,7 @@ export default function SiteHeader() {
   const [socials, setSocials] = useState<SocialLink[]>([...siteConfig.socials]);
 
   useEffect(() => {
-    fetch('/api/media')
+    fetch('/api/media', { cache: 'no-store' })
       .then(r => r.json())
       .then(d => { if (d.contact?.socials?.length) setSocials(d.contact.socials); })
       .catch(() => {});
@@ -111,3 +111,4 @@ export default function SiteHeader() {
     </>
   );
 }
+
