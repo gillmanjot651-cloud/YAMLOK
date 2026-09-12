@@ -1,14 +1,15 @@
-import { readFile } from 'fs/promises';
-import path from 'path';
 import type { MediaData } from '@/types/media';
 import VideoSection from '@/components/sections/VideoSection';
 
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'YAMLOK — Videos' };
 
 async function getVideos() {
   try {
-    const raw = await readFile(path.join(process.cwd(), 'public', 'media.json'), 'utf-8');
-    return (JSON.parse(raw) as MediaData).videos;
+    const base = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+    const res  = await fetch(`${base}/api/media`, { cache: 'no-store' });
+    if (!res.ok) return [];
+    return ((await res.json()) as MediaData).videos;
   } catch { return []; }
 }
 
