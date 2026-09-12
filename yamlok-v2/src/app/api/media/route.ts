@@ -8,7 +8,7 @@ import { authOptions } from '@/lib/authOptions';
 export async function GET() {
   const token    = process.env.GITHUB_TOKEN;
   const repo     = process.env.GITHUB_REPO;
-  const branch   = process.env.GITHUB_BRANCH    || 'main';
+  const branch   = process.env.GITHUB_CONTENT_BRANCH || process.env.GITHUB_BRANCH || 'content';
   const filePath = process.env.GITHUB_MEDIA_PATH || 'yamlok-v2/public/media.json';
 
   // If GitHub env vars are set, read directly from the repo (instant updates)
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
 
   const token    = process.env.GITHUB_TOKEN;
   const repo     = process.env.GITHUB_REPO;
-  const branch   = process.env.GITHUB_BRANCH    || 'main';
+  const branch   = process.env.GITHUB_CONTENT_BRANCH || process.env.GITHUB_BRANCH || 'content';
   const filePath = process.env.GITHUB_MEDIA_PATH || 'yamlok-v2/public/media.json';
 
   if (!token || !repo) {
