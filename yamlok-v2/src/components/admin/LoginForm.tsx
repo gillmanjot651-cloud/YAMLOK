@@ -28,7 +28,7 @@ export default function LoginForm() {
     setLoginErr(''); setLogging(true);
     const res = await signIn('credentials', { password, redirect: false });
     setLogging(false);
-    if (res?.ok) { router.refresh(); router.push('/admin'); }
+    if (res?.ok) { window.location.href = '/admin'; }
     else { setLoginErr('Incorrect password.'); setPassword(''); }
   };
 
