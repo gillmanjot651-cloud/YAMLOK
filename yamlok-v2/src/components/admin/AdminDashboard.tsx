@@ -405,7 +405,7 @@ export default function AdminDashboard() {
   const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor));
 
   useEffect(() => {
-    fetch('/api/media').then(r => r.json()).then(d => {
+    fetch('/api/media', { cache: 'no-store' }).then(r => r.json()).then(d => {
       setMedia(d);
       if (d.hero)    setHero(d.hero);
       if (d.about)   setAbout(d.about);
@@ -446,6 +446,13 @@ export default function AdminDashboard() {
       const json = await res.json();
       if (res.ok || res.status === 207) {
         setDirty(false);
+        // Re-fetch from GitHub so local state matches what was actually saved
+        fetch('/api/media', { cache: 'no-store' }).then(r => r.json()).then(d => {
+          setMedia(d);
+          if (d.hero)    setHero(d.hero);
+          if (d.about)   setAbout(d.about);
+          if (d.contact) setContact(d.contact);
+        }).catch(() => {});
         if (json.published)        adminToast.success('Published to GitHub!');
         else if (json.githubError) adminToast.error(`Saved locally — GitHub: ${json.githubError}`);
         else                       adminToast.success('Saved locally');
