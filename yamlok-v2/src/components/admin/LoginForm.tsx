@@ -46,9 +46,12 @@ export default function LoginForm() {
       });
       const json = await res.json();
       if (res.ok) {
-        setResetMsg('Password updated! You can now log in.');
+        // If Vercel returned a warning, show that instead of a generic message
+        setResetMsg(json.warning
+          ? `Done! ${json.warning}`
+          : 'Password updated! You can now log in.');
         setToken(''); setNewPw(''); setConfirmPw('');
-        setTimeout(() => setMode('login'), 2000);
+        if (!json.warning) setTimeout(() => setMode('login'), 2000);
       } else {
         setResetErr(json.error || 'Reset failed.');
       }

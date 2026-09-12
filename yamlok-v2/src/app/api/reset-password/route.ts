@@ -1,18 +1,23 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { readFile, writeFile } from 'fs/promises';
-import path from 'path';
 
 // ── POST /api/reset-password ──
 // Body: { token: string; newPassword: string }
-// Validates against RESET_TOKEN env var, then bcrypt-hashes and writes
-// the new password into .env.local so it persists across restarts.
+//
+// On Vercel the filesystem is read-only — we cannot write .env.local.
+// Instead we update process.env in memory so the new password works for
+// the lifetime of the current serverless function instance, and we return
+// a clear message telling the user to also update ADMIN_PASSWORD in the
+// Vercel dashboard so it persists after the next deployment / cold start.
 export async function POST(req: Request) {
   const { token, newPassword } = await req.json().catch(() => ({}));
 
   const validToken = process.env.RESET_TOKEN;
   if (!validToken) {
-    return NextResponse.json({ error: 'Password reset is not configured. Set RESET_TOKEN in .env.local.' }, { status: 503 });
+    return NextResponse.json(
+      { error: 'Password reset is not configured. Add RESET_TOKEN to your Vercel environment variables.' },
+      { status: 503 },
+    );
   }
   if (!token || token !== validToken) {
     return NextResponse.json({ error: 'Invalid reset token.' }, { status: 403 });
@@ -21,29 +26,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Password must be at least 6 characters.' }, { status: 400 });
   }
 
-  // Hash the new password
   const hashed = await bcrypt.hash(newPassword, 10);
 
-  // Write into .env.local — update ADMIN_PASSWORD line if present, else append
-  const envPath = path.join(process.cwd(), '.env.local');
-  try {
-    let envContent = '';
-    try { envContent = await readFile(envPath, 'utf-8'); } catch { /* file may not exist */ }
-
-    const line = `ADMIN_PASSWORD=${hashed}`;
-    if (/^ADMIN_PASSWORD=/m.test(envContent)) {
-      envContent = envContent.replace(/^ADMIN_PASSWORD=.*/m, line);
-    } else {
-      envContent = envContent.trimEnd() + '\n' + line + '\n';
-    }
-    await writeFile(envPath, envContent, 'utf-8');
-  } catch {
-    return NextResponse.json({ error: 'Could not write .env.local on server.' }, { status: 500 });
-  }
-
-  // Also update the live process env so the new password works immediately
-  // without needing a server restart
+  // Update in-memory so it works immediately in this serverless instance
   process.env.ADMIN_PASSWORD = hashed;
 
-  return NextResponse.json({ ok: true });
+  // On Vercel we cannot write to disk — tell the user what to do next
+  return NextResponse.json({
+    ok: true,
+    warning:
+      'Password updated for this session. To make it permanent, go to your Vercel dashboard → '
+      + 'Project Settings → Environment Variables → update ADMIN_PASSWORD to: ' + hashed,
+  });
 }

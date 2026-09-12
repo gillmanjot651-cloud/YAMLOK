@@ -1,47 +1,141 @@
 # YAMLOK v2 — Production Portfolio Site
 
 A full-stack Next.js 14 gaming portfolio with a password-protected admin panel.
-Built with TypeScript, Tailwind CSS, NextAuth.js, and framer-motion.
+Built with TypeScript, Tailwind CSS, NextAuth.js, and Framer Motion.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Deploy to Vercel (free, recommended)
 
-### 1. Install dependencies
+Follow these steps in order. The whole process takes about 10 minutes.
+
+---
+
+### Step 1 — Push the repo to GitHub
+
+1. Go to [github.com/new](https://github.com/new) and create a **new private repository** (e.g. `yamlok-portfolio`)
+2. In your terminal, from the root of this project:
+
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USERNAME/yamlok-portfolio.git
+git push -u origin main
+```
+
+---
+
+### Step 2 — Create a free Upstash Redis database (for visitor analytics)
+
+1. Go to [upstash.com](https://upstash.com) → Sign up free
+2. Click **Create Database** → choose **Redis** → pick the free tier → any region
+3. Open the database → click the **REST API** tab
+4. Copy the two values:
+   - `UPSTASH_REDIS_REST_URL`  (looks like `https://xxxxxxx.upstash.io`)
+   - `UPSTASH_REDIS_REST_TOKEN` (a long token string)
+
+Keep these — you'll paste them into Vercel in Step 4.
+
+---
+
+### Step 3 — Create a GitHub Personal Access Token (for admin saves)
+
+This lets the admin panel commit changes directly to your GitHub repo so they survive redeploys.
+
+1. Go to [github.com/settings/tokens/new](https://github.com/settings/tokens/new?scopes=repo)
+2. Give it a name like `yamlok-admin`
+3. Tick the **`repo`** scope only
+4. Click **Generate token** and copy it immediately
+
+---
+
+### Step 4 — Deploy on Vercel
+
+1. Go to [vercel.com](https://vercel.com) → **Add New Project**
+2. Click **Import Git Repository** → select your `yamlok-portfolio` repo
+3. Vercel will auto-detect Next.js. Leave all build settings as-is.
+4. Click **Environment Variables** and add **all of the following**:
+
+| Variable | Value |
+|---|---|
+| `NEXTAUTH_SECRET` | Any 32+ character random string — generate one at [generate-secret.vercel.app](https://generate-secret.vercel.app/32) |
+| `NEXTAUTH_URL` | Your Vercel URL — e.g. `https://yamlok.vercel.app` (you can update this after first deploy) |
+| `ADMIN_PASSWORD` | The password to log into `/admin` — e.g. `yamlok2025` |
+| `RESET_TOKEN` | A secret string your friend uses to reset the password — e.g. any random word |
+| `GITHUB_TOKEN` | The token you created in Step 3 |
+| `GITHUB_REPO` | Your repo in `username/reponame` format — e.g. `YamRajSingh13/yamlok-portfolio` |
+| `GITHUB_BRANCH` | `main` |
+| `GITHUB_MEDIA_PATH` | `yamlok-v2/public/media.json` |
+| `UPSTASH_REDIS_REST_URL` | From Step 2 |
+| `UPSTASH_REDIS_REST_TOKEN` | From Step 2 |
+| `IMGBB_API_KEY` | Free key from [api.imgbb.com](https://api.imgbb.com/) — for image uploads |
+
+5. Click **Deploy** 🚀
+
+---
+
+### Step 5 — Update NEXTAUTH_URL
+
+After the first deploy Vercel gives you a URL like `https://yamlok-xyz.vercel.app`.
+
+1. Go to your Vercel project → **Settings → Environment Variables**
+2. Update `NEXTAUTH_URL` to your exact URL (no trailing slash)
+3. Go to **Deployments** → click the three dots on the latest deploy → **Redeploy**
+
+Your site is now live!
+
+---
+
+### Step 6 — (Optional) Add a custom domain
+
+In Vercel → **Settings → Domains** → add your domain and follow the DNS instructions.
+
+---
+
+## ✏️ How the admin panel works on Vercel
+
+When your friend logs into `/admin` and clicks **Save & Publish**:
+
+1. The changes are **committed directly to your GitHub repo** (via the GitHub API)
+2. Vercel detects the new commit and **automatically redeploys** (takes ~60 seconds)
+3. The live site updates with the new content
+
+This means the admin panel is fully functional with zero filesystem access.
+
+---
+
+## 🔑 How to change the admin password
+
+### Option A — Forgot password (from the login page)
+1. Go to `/admin/login` → click **Forgot password?**
+2. Enter the `RESET_TOKEN` value you set in Vercel
+3. Set a new password
+4. The page will show you the bcrypt hash of the new password
+5. Copy that hash → Vercel dashboard → Environment Variables → update `ADMIN_PASSWORD` → Redeploy
+
+### Option B — Direct update
+1. Vercel dashboard → Project Settings → Environment Variables
+2. Update `ADMIN_PASSWORD` to your new password (plain text is fine)
+3. Redeploy
+
+---
+
+## 🏃 Run locally
+
 ```bash
 cd yamlok-v2
 npm install
-```
-
-### 2. Set up environment variables
-```bash
 cp .env.local.example .env.local
-```
-Then open `.env.local` and fill in:
-
-| Variable | What it is |
-|---|---|
-| `NEXTAUTH_SECRET` | Any 32+ character random string (e.g. run `openssl rand -base64 32`) |
-| `NEXTAUTH_URL` | Your site URL, e.g. `http://localhost:3000` or `https://yoursite.com` |
-| `ADMIN_PASSWORD` | The password your friend uses to log in to `/admin` |
-| `GITHUB_TOKEN` | A GitHub Personal Access Token with `repo` scope |
-| `GITHUB_REPO` | Your repo, e.g. `YamRajSingh13/yamlok-v2` |
-| `GITHUB_BRANCH` | Branch to push to, usually `main` |
-| `GITHUB_MEDIA_PATH` | Path inside repo, usually `public/media.json` |
-| `IMGBB_API_KEY` | Free key from https://api.imgbb.com/ for image uploads |
-
-### 3. Run locally
-```bash
+# Fill in .env.local with your values
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) — main site  
+
+Open [http://localhost:3000](http://localhost:3000) — main site
 Open [http://localhost:3000/admin](http://localhost:3000/admin) — admin panel
 
-### 4. Deploy to Vercel (recommended, free)
-1. Push this folder to a GitHub repo
-2. Go to [vercel.com](https://vercel.com) → New Project → import the repo
-3. Add all `.env.local` variables in the Vercel dashboard under **Settings → Environment Variables**
-4. Deploy!
+> **Note:** When running locally, `GITHUB_TOKEN` + `GITHUB_REPO` must be set in `.env.local`
+> for admin saves to work (they push to GitHub just like production).
 
 ---
 
@@ -50,65 +144,28 @@ Open [http://localhost:3000/admin](http://localhost:3000/admin) — admin panel
 ```
 yamlok-v2/
 ├── public/
-│   └── media.json          ← All images & videos live here
+│   └── media.json          ← Images & videos (committed to GitHub)
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx         ← Main site (server component, reads media.json)
-│   │   ├── layout.tsx       ← Root layout (fonts, Toaster)
-│   │   ├── globals.css      ← Global styles + Tailwind
-│   │   ├── admin/
-│   │   │   ├── page.tsx     ← Admin dashboard (protected)
-│   │   │   └── login/page.tsx
+│   │   ├── (site)/          ← Public pages: home, about, portfolio, video, contact
+│   │   ├── admin/           ← Protected admin dashboard + login
 │   │   └── api/
-│   │       ├── auth/[...nextauth]/route.ts  ← NextAuth
-│   │       ├── media/route.ts               ← GET/POST media.json + GitHub push
-│   │       └── upload/route.ts              ← Image upload proxy → ImgBB
+│   │       ├── auth/        ← NextAuth
+│   │       ├── media/       ← GET media.json / POST → push to GitHub
+│   │       ├── visitors/    ← Analytics (Upstash Redis)
+│   │       ├── upload/      ← Image upload proxy → ImgBB
+│   │       └── reset-password/
 │   ├── components/
-│   │   ├── sections/        ← Hero, Portfolio, Video, About, Contact, etc.
+│   │   ├── sections/        ← Hero, Portfolio, Video, About, Contact, Header, Footer
 │   │   ├── admin/           ← AdminDashboard, LoginForm
-│   │   └── ui/              ← Lightbox, SparksCanvas, CursorRing
+│   │   └── ui/              ← Lightbox, VisitorTracker, ConfirmModal, etc.
 │   ├── lib/
-│   │   ├── siteConfig.ts    ← ✏️ Edit this to change site text/links
+│   │   ├── siteConfig.ts    ← ✏️ Edit this to change site name, bio, socials
 │   │   └── utils.ts
-│   ├── types/media.ts
-│   └── middleware.ts        ← Protects /admin routes
+│   ├── types/media.ts       ← TypeScript types for all media data
+│   └── middleware.ts        ← Protects /admin routes (NextAuth)
+vercel.json                  ← Vercel deployment config
 ```
-
----
-
-## ✏️ How to customise site content (no code needed)
-
-### Change text, bio, social links
-Open [`src/lib/siteConfig.ts`](src/lib/siteConfig.ts) and edit the values. Every field has a comment explaining what it does.
-
-### Add/remove portfolio images or videos
-Go to `/admin` in the browser, log in, and use the dashboard.
-
----
-
-## 🔐 Admin Panel — How it works
-
-1. Go to `/admin` — you'll be redirected to `/admin/login`
-2. Enter the password from `ADMIN_PASSWORD` in your `.env.local`
-3. The panel lets you:
-   - Add images by URL or drag-and-drop file upload (proxied via server → ImgBB)
-   - Add YouTube videos (paste full URL or just the video ID)
-   - Add direct video URLs (Google Drive, Streamable, Dropbox, etc.)
-   - Drag rows to reorder everything
-   - Click ✕ to remove any item
-4. Click **💾 Save & Publish** — this:
-   - Saves `public/media.json` on the server
-   - Pushes it to GitHub via the API (if `GITHUB_TOKEN` + `GITHUB_REPO` are set)
-   - The live Vercel site auto-redeploys from the GitHub push
-
----
-
-## 🔒 Security Notes
-
-- Passwords are validated **server-side only** via NextAuth.js — never in the browser
-- The ImgBB API key is stored in `.env.local` and proxied server-side — never exposed to the browser
-- The GitHub token is server-side only
-- Admin routes are protected by `next-auth/middleware` — unauthenticated requests are redirected to `/admin/login`
 
 ---
 
@@ -119,9 +176,11 @@ Go to `/admin` in the browser, log in, and use the dashboard.
 | Framework | Next.js 14 (App Router) |
 | Language | TypeScript |
 | Styling | Tailwind CSS |
-| Auth | NextAuth.js v4 (JWT sessions) |
-| Drag & Drop | @dnd-kit |
+| Auth | NextAuth.js v4 (JWT) |
 | Animations | Framer Motion |
+| Drag & Drop | @dnd-kit |
 | Notifications | react-hot-toast |
 | Image hosting | ImgBB (free) |
+| Analytics storage | Upstash Redis (free) |
 | Deployment | Vercel (free tier) |
+| Media persistence | GitHub API |

@@ -1,0 +1,9 @@
+{
+  "buildCommand": "cd yamlok-v2 && npm install && npm run build",
+  "outputDirectory": "yamlok-v2/.next",
+  "installCommand": "echo skip",
+  "framework": "nextjs",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/$1" }
+  ]
+}
