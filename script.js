@@ -74,14 +74,17 @@ function updateLightboxContent() {
     imgModalContent.innerHTML = ''; // Clear previous
 
     if (item.type === 'image') {
-        // Image Logic
         imgModalContent.innerHTML = `<img src="${item.src}" alt="${item.alt}">`;
-    } else if (item.type === 'video') {
-        // Video Logic (YouTube Embed)
+    } else if (item.type === 'video-yt') {
         imgModalContent.innerHTML = `
-            <iframe src="https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0" 
-            title="YouTube video player" frameborder="0" 
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            <iframe src="https://www.youtube.com/embed/${item.id}?autoplay=1&rel=0"
+            title="YouTube video player" frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen></iframe>`;
+    } else if (item.type === 'video-direct') {
+        imgModalContent.innerHTML = `
+            <iframe src="${item.src}" title="${item.title || 'Video'}" frameborder="0"
+            allow="autoplay; fullscreen"
             allowfullscreen></iframe>`;
     }
 }
@@ -97,28 +100,6 @@ function prevItem() {
     currentIndex = (currentIndex - 1 + currentGalleryItems.length) % currentGalleryItems.length;
     updateLightboxContent();
 }
-
-// Event Listeners for Gallery Items
-document.querySelectorAll('.gallery-group').forEach(group => {
-    // Collect siblings for context-aware navigation
-    const children = Array.from(group.querySelectorAll('.img-slot, .video-card'));
-
-    children.forEach((el, index) => {
-        el.addEventListener('click', () => {
-            // Build the list of items based on this group
-            const items = children.map(child => {
-                if (child.classList.contains('img-slot')) {
-                    const img = child.querySelector('img');
-                    return { type: 'image', src: img.src, alt: img.alt };
-                } else {
-                    const vidId = child.getAttribute('data-video-id');
-                    return { type: 'video', id: vidId };
-                }
-            });
-            openLightbox(index, items);
-        });
-    });
-});
 
 // Modal Controls
 if (modalNext) modalNext.addEventListener('click', (e) => { e.stopPropagation(); nextItem(); });
@@ -137,12 +118,113 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+/* ─────────────────────────────────────────────────────────────
+   DYNAMIC MEDIA RENDERING
+   Fetches media.json, builds portfolio grid + video grid,
+   then wires up the lightbox event listeners.
+───────────────────────────────────────────────────────────── */
+async function loadAndRenderMedia() {
+    let data;
+    try {
+        const res = await fetch('media.json?_=' + Date.now());
+        data = await res.json();
+    } catch {
+        data = { images: [], videos: [] };
+    }
+
+    renderPortfolio(data.images || []);
+    renderVideos(data.videos || []);
+    wireGalleryEvents();
+}
+
+function renderPortfolio(images) {
+    const grid = document.getElementById('portfolioGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    images.forEach(img => {
+        const slot = document.createElement('div');
+        slot.className = 'img-slot';
+        slot.tabIndex  = 0;
+        slot.innerHTML = `<img src="${escAttr(img.src)}" alt="${escAttr(img.alt)}" loading="lazy">`;
+        grid.appendChild(slot);
+    });
+}
+
+function renderVideos(videos) {
+    const grid = document.getElementById('videoGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    videos.forEach(vid => {
+        const isYT    = !!vid.id;
+        const thumbSrc = isYT
+            ? `https://img.youtube.com/vi/${vid.id}/hqdefault.jpg`
+            : (vid.thumb || '');
+        const card = document.createElement('div');
+        card.className = 'video-card';
+        if (isYT) {
+            card.dataset.videoId = vid.id;
+        } else {
+            card.dataset.videoSrc = vid.src;
+            card.dataset.videoTitle = vid.title || '';
+        }
+        card.innerHTML = `
+            <img src="${escAttr(thumbSrc)}" alt="${escAttr(vid.title || 'Video')}" class="video-thumb" loading="lazy">
+            <div class="video-gradient"></div>
+            <div class="play-btn-wrapper">
+                <div class="play-btn"><div class="play-icon"></div></div>
+            </div>
+            <div class="watch-label">PLAY VIDEO</div>`;
+        grid.appendChild(card);
+    });
+}
+
+function escAttr(str) {
+    return String(str || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function wireGalleryEvents() {
+    document.querySelectorAll('.gallery-group').forEach(group => {
+        const children = Array.from(group.querySelectorAll('.img-slot, .video-card'));
+
+        children.forEach((el, index) => {
+            // Remove any previous listener by cloning
+            const clone = el.cloneNode(true);
+            el.parentNode.replaceChild(clone, el);
+            children[index] = clone;
+        });
+
+        children.forEach((el, index) => {
+            el.addEventListener('click', () => {
+                const items = children.map(child => {
+                    if (child.classList.contains('img-slot')) {
+                        const img = child.querySelector('img');
+                        return { type: 'image', src: img.src, alt: img.alt };
+                    } else {
+                        const ytId = child.dataset.videoId;
+                        if (ytId) return { type: 'video-yt', id: ytId };
+                        return { type: 'video-direct', src: child.dataset.videoSrc, title: child.dataset.videoTitle };
+                    }
+                });
+                openLightbox(index, items);
+            });
+        });
+    });
+
+    // Re-attach cursor hover if not touch
+    if (!isTouchDevice) {
+        document.querySelectorAll(interactiveSelector).forEach(el => {
+            el.addEventListener('mouseenter', () => setCursorHoverState(true));
+            el.addEventListener('mouseleave', () => setCursorHoverState(false));
+        });
+    }
+}
+
 /* --- CURSOR --- */
 const cursor = document.getElementById('cursorRing');
 if (cursor && !isTouchDevice) {
     document.addEventListener('mousemove', e => {
         cursor.style.left = e.clientX + 'px';
-        cursor.style.top = e.clientY + 'px';
+        cursor.style.top  = e.clientY + 'px';
     });
 }
 const interactiveSelector = 'button, .nav-btn, .img-slot, a, .video-card';
@@ -171,20 +253,21 @@ setInterval(() => {
 
 /* --- INIT --- */
 showPage('home');
+loadAndRenderMedia();
 
 /* --- POPOUTS (Side Menus) --- */
-const leftEdge = document.getElementById('leftEdge');
-const rightEdge = document.getElementById('rightEdge');
-const leftPanel = document.getElementById('leftPanel');
+const leftEdge   = document.getElementById('leftEdge');
+const rightEdge  = document.getElementById('rightEdge');
+const leftPanel  = document.getElementById('leftPanel');
 const rightPanel = document.getElementById('rightPanel');
 
-function openLeft() { if (leftPanel) leftPanel.classList.add('open-left'); }
-function closeLeft() { if (leftPanel) leftPanel.classList.remove('open-left'); }
+function openLeft()  { if (leftPanel)  leftPanel.classList.add('open-left'); }
+function closeLeft() { if (leftPanel)  leftPanel.classList.remove('open-left'); }
 function openRight() { if (rightPanel) rightPanel.classList.add('open-right'); }
-function closeRight() { if (rightPanel) rightPanel.classList.remove('open-right'); }
+function closeRight(){ if (rightPanel) rightPanel.classList.remove('open-right'); }
 
 if (!isTouchDevice) {
-    if (leftEdge) { leftEdge.addEventListener('mouseenter', () => openLeft()); leftEdge.addEventListener('mouseleave', () => closeLeft()); }
+    if (leftEdge)  { leftEdge.addEventListener('mouseenter',  () => openLeft());  leftEdge.addEventListener('mouseleave',  () => closeLeft());  }
     if (rightEdge) { rightEdge.addEventListener('mouseenter', () => openRight()); rightEdge.addEventListener('mouseleave', () => closeRight()); }
     let popTimers = { left: null, right: null };
     document.addEventListener('mousemove', (e) => {
@@ -196,7 +279,7 @@ if (!isTouchDevice) {
             if (popTimers.right) { clearTimeout(popTimers.right); popTimers.right = null; }
             if (rightPanel && !rightPanel.classList.contains('open-right')) openRight();
         } else {
-            if (!popTimers.left) popTimers.left = setTimeout(() => closeLeft(), 500);
+            if (!popTimers.left)  popTimers.left  = setTimeout(() => closeLeft(),  500);
             if (!popTimers.right) popTimers.right = setTimeout(() => closeRight(), 500);
         }
     });

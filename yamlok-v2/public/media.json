@@ -1,0 +1,118 @@
+{
+  "contact": {
+    "email": "gillmanjot651@gmail.com",
+    "discord": "https://discord.com/invite/Txe6XecMc7",
+    "tagline": "Ready to create something epic? Let's talk.",
+    "graphicMin": "150",
+    "graphicMax": "300",
+    "videoMin": "1500",
+    "videoMax": "7000",
+    "socials": [
+      {
+        "label": "Y",
+        "title": "YouTube",
+        "href": "https://www.youtube.com/@YamRajSingh13"
+      },
+      {
+        "label": "I",
+        "title": "Instagram",
+        "href": "https://www.instagram.com/hmp871/"
+      },
+      {
+        "label": "D",
+        "title": "Discord",
+        "href": "https://discord.gg/Txe6XecMc7"
+      }
+    ]
+  },
+  "hero": {
+    "badge": "Available for commissions",
+    "description": "Crafting cinematic edits, motion graphics & visual designs for GTA V and beyond. Delivering premium content worldwide.",
+    "roles": [
+      "Cinematic Editor",
+      "GTA V Content Creator",
+      "Motion Designer",
+      "Visual Artist"
+    ],
+    "heroBg": "https://cdn.discordapp.com/attachments/1453837697914241138/1454356892725018694/Yam_Final_mask.png?ex=6aa6e827&is=6aa596a7&hm=cff1595cbf067943846e77749aff1aed95bfb6036051f3b119d3fe5a887d13e2&"
+  },
+  "about": {
+    "bio": "Hi — I'm <strong>Manjot Singh Gill (YAMLOK)</strong>. I create cinematic edits in GTA 5.",
+    "skills": [
+      "🎬 Video editing & motion design",
+      "🎨 Graphic & visual design",
+      "🌐 AI Web Designing",
+      "⚡ Using Premiere Pro, Photoshop & After Effects"
+    ],
+    "extraLines": [
+      "This Website made by me using Multiple AI <strong>ChatGPT, Gemini and Blackbox</strong>",
+      "All Payment Regarding talks Create Ticket in Discord.",
+      "The mentioned pricing applies only to graphic design work (images). Video graphics are charged separately, typically ranging from 1500 to 7000."
+    ]
+  },
+  "images": [
+    {
+      "id": "p4g9q0x",
+      "src": "https://cdn.discordapp.com/attachments/1146428597863714856/1499113605621092362/image.png?ex=6aa6e9d7&is=6aa59857&hm=5dab71b8c7e4e14a7eb740655d90776711c549a8d2d625de1a06e247cb5e3284&",
+      "alt": "TEST",
+      "category": "Cinematic"
+    }
+  ],
+  "videos": [
+    {
+      "id": "A6vMRaTLD-E",
+      "type": "youtube",
+      "title": "Video 1"
+    },
+    {
+      "id": "0Pm0LeXcuEo",
+      "type": "youtube",
+      "title": "Video 2"
+    },
+    {
+      "id": "wy4Yv2YxeGY",
+      "type": "youtube",
+      "title": "Video 3"
+    },
+    {
+      "id": "GJyzCGQhGaI",
+      "type": "youtube",
+      "title": "Video 4"
+    },
+    {
+      "id": "2k3C6BYVAHY",
+      "type": "youtube",
+      "title": "Video 5"
+    },
+    {
+      "id": "r6K-zgr_aY4",
+      "type": "youtube",
+      "title": "Video 6"
+    },
+    {
+      "id": "kkRcUc5tKXc",
+      "type": "youtube",
+      "title": "Video 7"
+    },
+    {
+      "id": "hxZQkLPr1hE",
+      "type": "youtube",
+      "title": "Video 8"
+    },
+    {
+      "id": "-vNIjezj2s4",
+      "type": "youtube",
+      "title": "Video 9"
+    },
+    {
+      "id": "q_JdTywwMIs",
+      "type": "youtube",
+      "title": "Video 10"
+    },
+    {
+      "type": "youtube",
+      "id": "MyVM34IpkFg",
+      "title": "TESTING"
+    }
+  ]
+}

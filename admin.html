@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>YAMLOK — Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Rajdhani:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body class="admin-body">
+
+    <!-- ═══════════════════════════════════════════════ LOGIN SCREEN -->
+    <div id="loginScreen" class="adm-login-screen">
+        <div class="adm-login-box">
+            <div class="adm-login-logo">YAMLOK</div>
+            <div class="adm-login-sub">Admin Panel</div>
+            <div class="adm-field">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="Enter admin password" autocomplete="current-password" />
+            </div>
+            <button class="adm-btn-primary" id="loginBtn">ENTER</button>
+            <div class="adm-login-error" id="loginError"></div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════ MAIN PANEL -->
+    <div id="adminPanel" class="adm-panel" style="display:none;">
+
+        <!-- Sidebar -->
+        <aside class="adm-sidebar">
+            <div class="adm-sidebar-logo">YAMLOK</div>
+            <div class="adm-sidebar-sub">Admin Panel</div>
+            <nav class="adm-sidenav">
+                <button class="adm-sidenav-btn active" data-tab="images">🖼️ Portfolio Images</button>
+                <button class="adm-sidenav-btn" data-tab="videos">▶️ Videos</button>
+                <button class="adm-sidenav-btn" data-tab="settings">⚙️ Settings</button>
+            </nav>
+            <button class="adm-logout-btn" id="logoutBtn">Logout</button>
+        </aside>
+
+        <!-- Content -->
+        <main class="adm-content">
+
+            <!-- ── SAVE BANNER ── -->
+            <div class="adm-save-bar">
+                <span id="saveStatus" class="adm-save-status"></span>
+                <button class="adm-btn-primary" id="saveBtn">💾 Save &amp; Publish</button>
+            </div>
+
+            <!-- ══ TAB: IMAGES ══ -->
+            <section class="adm-tab active" id="tab-images">
+                <div class="adm-section-header">
+                    <h2>Portfolio Images</h2>
+                    <p>Add images by URL (ImgBB, Imgur, Google Drive, any direct link) or upload a file to ImgBB automatically.</p>
+                </div>
+
+                <!-- Add image -->
+                <div class="adm-add-card">
+                    <h3>Add New Image</h3>
+                    <div class="adm-add-row">
+                        <div class="adm-field">
+                            <label>Image URL <span class="adm-hint">(paste a direct image link)</span></label>
+                            <input type="url" id="newImgUrl" placeholder="https://i.ibb.co/..." />
+                        </div>
+                        <div class="adm-field">
+                            <label>Caption / Alt Text</label>
+                            <input type="text" id="newImgAlt" placeholder="e.g. GTA V Edit" />
+                        </div>
+                    </div>
+                    <div class="adm-add-row adm-or-row">
+                        <span class="adm-or">— OR upload a file —</span>
+                    </div>
+                    <div class="adm-add-row">
+                        <div class="adm-field">
+                            <label>Upload Image File <span class="adm-hint">(uploaded to ImgBB, needs API key in Settings)</span></label>
+                            <div class="adm-upload-zone" id="imgUploadZone">
+                                <input type="file" id="imgFileInput" accept="image/*" />
+                                <span id="imgUploadLabel">Click or drag an image here</span>
+                            </div>
+                            <div class="adm-upload-progress" id="imgUploadProgress" style="display:none;">
+                                <div class="adm-progress-bar"><div id="imgProgressFill"></div></div>
+                                <span id="imgUploadMsg">Uploading…</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="adm-btn-primary" id="addImgBtn">+ Add Image</button>
+                </div>
+
+                <!-- Image list -->
+                <div class="adm-list-header">
+                    <h3>Current Images <span id="imgCount" class="adm-count"></span></h3>
+                    <p class="adm-hint">Drag rows to reorder. Click ✕ to remove.</p>
+                </div>
+                <div id="imageList" class="adm-media-list"></div>
+            </section>
+
+            <!-- ══ TAB: VIDEOS ══ -->
+            <section class="adm-tab" id="tab-videos">
+                <div class="adm-section-header">
+                    <h2>Videos</h2>
+                    <p>Add YouTube videos by URL or full Video ID. Direct MP4/video file uploads are also supported.</p>
+                </div>
+
+                <!-- Add video -->
+                <div class="adm-add-card">
+                    <h3>Add New Video</h3>
+                    <div class="adm-add-row">
+                        <div class="adm-field">
+                            <label>YouTube URL or Video ID <span class="adm-hint">(e.g. https://youtu.be/ABC123 or just ABC123)</span></label>
+                            <input type="text" id="newVidUrl" placeholder="https://www.youtube.com/watch?v=... or video ID" />
+                        </div>
+                        <div class="adm-field">
+                            <label>Title</label>
+                            <input type="text" id="newVidTitle" placeholder="e.g. GTA V Cinematic Edit" />
+                        </div>
+                    </div>
+                    <div class="adm-add-row adm-or-row">
+                        <span class="adm-or">— OR upload a video file (hosted elsewhere) —</span>
+                    </div>
+                    <div class="adm-add-row">
+                        <div class="adm-field">
+                            <label>Direct Video File URL <span class="adm-hint">(Google Drive share link, Streamable, Dropbox, etc.)</span></label>
+                            <input type="url" id="newVidDirectUrl" placeholder="https://drive.google.com/..." />
+                        </div>
+                        <div class="adm-field">
+                            <label>Thumbnail URL <span class="adm-hint">(optional, for direct video preview)</span></label>
+                            <input type="url" id="newVidThumb" placeholder="https://..." />
+                        </div>
+                    </div>
+                    <button class="adm-btn-primary" id="addVidBtn">+ Add Video</button>
+                </div>
+
+                <!-- Video list -->
+                <div class="adm-list-header">
+                    <h3>Current Videos <span id="vidCount" class="adm-count"></span></h3>
+                    <p class="adm-hint">Drag rows to reorder. Click ✕ to remove.</p>
+                </div>
+                <div id="videoList" class="adm-media-list"></div>
+            </section>
+
+            <!-- ══ TAB: SETTINGS ══ -->
+            <section class="adm-tab" id="tab-settings">
+                <div class="adm-section-header">
+                    <h2>Settings</h2>
+                    <p>Configure GitHub publishing and image upload API keys. These are saved only in your browser.</p>
+                </div>
+
+                <div class="adm-settings-grid">
+                    <div class="adm-settings-card">
+                        <h3>🐙 GitHub Publishing</h3>
+                        <p class="adm-hint">When you click "Save &amp; Publish", the admin panel pushes <code>media.json</code> directly to your GitHub repo so the live site updates instantly. Fill in the details below.</p>
+                        <div class="adm-field">
+                            <label>GitHub Personal Access Token <span class="adm-hint">(<a href="https://github.com/settings/tokens/new?scopes=repo" target="_blank" rel="noopener">create one here</a> — needs <code>repo</code> scope)</span></label>
+                            <input type="password" id="ghToken" placeholder="ghp_..." autocomplete="off" />
+                        </div>
+                        <div class="adm-field">
+                            <label>Repository <span class="adm-hint">(owner/repo)</span></label>
+                            <input type="text" id="ghRepo" placeholder="e.g. YamRajSingh13/YAMLOK" />
+                        </div>
+                        <div class="adm-field">
+                            <label>Branch</label>
+                            <input type="text" id="ghBranch" placeholder="main" value="main" />
+                        </div>
+                        <div class="adm-field">
+                            <label>File path in repo</label>
+                            <input type="text" id="ghFilePath" placeholder="media.json" value="media.json" />
+                        </div>
+                        <button class="adm-btn-secondary" id="saveGhSettings">Save GitHub Settings</button>
+                        <div class="adm-settings-msg" id="ghMsg"></div>
+                    </div>
+
+                    <div class="adm-settings-card">
+                        <h3>🖼️ ImgBB Image Upload</h3>
+                        <p class="adm-hint">To use the "Upload Image File" feature in Portfolio, you need a free ImgBB API key. <a href="https://api.imgbb.com/" target="_blank" rel="noopener">Get one here</a>.</p>
+                        <div class="adm-field">
+                            <label>ImgBB API Key</label>
+                            <input type="password" id="imgbbKey" placeholder="your-imgbb-api-key" autocomplete="off" />
+                        </div>
+                        <button class="adm-btn-secondary" id="saveImgbbSettings">Save ImgBB Key</button>
+                        <div class="adm-settings-msg" id="imgbbMsg"></div>
+                    </div>
+
+                    <div class="adm-settings-card">
+                        <h3>🔐 Change Admin Password</h3>
+                        <p class="adm-hint">This password is stored in your browser only. If you clear browser data, you will need to reset it manually in <code>admin.js</code>.</p>
+                        <div class="adm-field">
+                            <label>Current Password</label>
+                            <input type="password" id="curPass" placeholder="Current password" />
+                        </div>
+                        <div class="adm-field">
+                            <label>New Password</label>
+                            <input type="password" id="newPass" placeholder="New password" />
+                        </div>
+                        <div class="adm-field">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="confirmPass" placeholder="Confirm new password" />
+                        </div>
+                        <button class="adm-btn-secondary" id="changePassBtn">Update Password</button>
+                        <div class="adm-settings-msg" id="passMsg"></div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>
