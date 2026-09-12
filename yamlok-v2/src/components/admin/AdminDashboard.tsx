@@ -441,18 +441,23 @@ export default function AdminDashboard() {
   const save = async () => {
     setSaving(true);
     try {
-      const payload = { ...media, hero, about, contact };
+      // Always fetch the latest from GitHub first so we never overwrite
+      // images/videos that were saved by a previous session.
+      let freshBase: MediaData = { images: [], videos: [] };
+      try {
+        const fresh = await fetch('/api/media', { cache: 'no-store' });
+        if (fresh.ok) freshBase = await fresh.json();
+      } catch { /* use empty fallback */ }
+
+      // Merge: use the current UI state for hero/about/contact/images/videos
+      // (the admin's in-session edits always win over whatever was on GitHub)
+      const payload = { ...freshBase, images: media.images, videos: media.videos, hero, about, contact };
+
       const res  = await fetch('/api/media', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       const json = await res.json();
       if (res.ok || res.status === 207) {
         setDirty(false);
-        // Re-fetch from GitHub so local state matches what was actually saved
-        fetch('/api/media', { cache: 'no-store' }).then(r => r.json()).then(d => {
-          setMedia(d);
-          if (d.hero)    setHero(d.hero);
-          if (d.about)   setAbout(d.about);
-          if (d.contact) setContact(d.contact);
-        }).catch(() => {});
+        setMedia(payload);
         if (json.published)        adminToast.success('Published to GitHub!');
         else if (json.githubError) adminToast.error(`Saved locally — GitHub: ${json.githubError}`);
         else                       adminToast.success('Saved locally');
