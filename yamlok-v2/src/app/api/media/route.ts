@@ -2,18 +2,41 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 
-// ── GET /api/media ── public: read media.json served from /public
-// On Vercel, /public files are static assets — fetch them via HTTP.
-// This also works locally (Next.js dev server serves /public at root).
+// ── GET /api/media ── public: read media.json from GitHub at runtime
+// Fetching from GitHub (not the baked static file) means changes made via
+// the admin panel are visible instantly — no redeployment needed.
 export async function GET() {
+  const token    = process.env.GITHUB_TOKEN;
+  const repo     = process.env.GITHUB_REPO;
+  const branch   = process.env.GITHUB_BRANCH    || 'main';
+  const filePath = process.env.GITHUB_MEDIA_PATH || 'yamlok-v2/public/media.json';
+
+  // If GitHub env vars are set, read directly from the repo (instant updates)
+  if (token && repo) {
+    try {
+      const res = await fetch(
+        `https://api.github.com/repos/${repo}/contents/${filePath}?ref=${branch}`,
+        {
+          headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+          cache: 'no-store',
+        }
+      );
+      if (res.ok) {
+        const json    = await res.json();
+        const content = Buffer.from(json.content, 'base64').toString('utf-8');
+        return NextResponse.json(JSON.parse(content));
+      }
+    } catch { /* fall through to static fallback */ }
+  }
+
+  // Fallback: serve the static file bundled at build time (local dev / missing env vars)
   try {
     const base = process.env.NEXTAUTH_URL || 'http://localhost:3000';
     const res  = await fetch(`${base}/media.json`, { cache: 'no-store' });
-    if (!res.ok) return NextResponse.json({ images: [], videos: [] });
-    return NextResponse.json(await res.json());
-  } catch {
-    return NextResponse.json({ images: [], videos: [] });
-  }
+    if (res.ok) return NextResponse.json(await res.json());
+  } catch { /* ignore */ }
+
+  return NextResponse.json({ images: [], videos: [] });
 }
 
 // ── POST /api/media ── admin-only: push updated media.json to GitHub
