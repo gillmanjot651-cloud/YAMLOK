@@ -54,14 +54,20 @@
     {
       "id": "7y2k45e",
       "src": "https://cdn.discordapp.com/attachments/1453837697914241138/1453838171279327354/gpt_extend.jpg?ex=6aa6ff4f&is=6aa5adcf&hm=430c30b50d4714d022e22bcf534801e9dcfcddd338fa0f8ab3bda6086ed5d2f0&",
-      "alt": "ez",
+      "alt": "BACK",
       "category": "Cinematic"
     },
     {
       "id": "s2bkc51",
       "src": "https://cdn.discordapp.com/attachments/1453837697914241138/1453838225385721988/ChatGPT_Image_Dec_26_2025_01_13_41_AM.jpg?ex=6aa6ff5b&is=6aa5addb&hm=d198af72aa7c865576c9429c284ec37bc395542f756e6b8650d676616704d58a&",
-      "alt": "Aura",
+      "alt": "AURA",
       "category": "Graphic"
+    },
+    {
+      "id": "13ia610",
+      "src": "https://media.discordapp.net/attachments/1453837697914241138/1454356892725018694/Yam_Final_mask.png?ex=6aa790e7&is=6aa63f67&hm=9f6d4a1e3942df28a08c6af1e35705b76f2ad68489a3444972bd43cd5758ce38&=&format=webp&quality=lossless&width=1536&height=864",
+      "alt": "YAMRAJ",
+      "category": "Thumbnail"
     }
   ],
   "videos": [
